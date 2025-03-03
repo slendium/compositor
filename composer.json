@@ -1,0 +1,23 @@
+{
+	"name": "slendium/compositor",
+	"description": "Reserving the package name.",
+	"type": "library",
+	"require-dev": {
+		"phpstan/phpstan": "^2.1"
+	},
+	"license": "MIT",
+	"autoload": {
+		"psr-4": {
+			"Slendium\\Compositor\\": "src/"
+		}
+	},
+	"authors": [
+		{
+			"name": "C. Fahner",
+			"email": "cfahner.git.ixuk9phi@slendium.org"
+		}
+	],
+	"require": {
+		"php": "^8.4"
+	}
+}
