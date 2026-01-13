@@ -6,6 +6,7 @@ A framework-agnostic PHP library for generating (hyper)text documents from a com
   strings, the latter of which are automatically escaped
 * Two-phase mechanism: expensive operations can be aggregated before the (hyper)text is generated
 * Composition-based, does not depend on inheritance or on global state
+* Track the resources (JS/CSS) needed for the components used
 * Reusability of components
 
 ## Installation
