@@ -2,9 +2,13 @@
 	"name": "slendium/compositor",
 	"description": "A framework-agnostic library for generating (hyper)text documents from a component tree.",
 	"type": "library",
+	"require": {
+		"php": "^8.5",
+		"slendium/localization": "^0.4"
+	},
 	"require-dev": {
 		"phpstan/phpstan": "^2.1",
-		"phpunit/phpunit": "^12.4"
+		"phpunit/phpunit": "^12.5.8"
 	},
 	"license": "MIT",
 	"autoload": {
@@ -12,13 +16,16 @@
 			"Slendium\\Compositor\\": "src/"
 		}
 	},
+	"autoload-dev": {
+		"psr-4": {
+			"Slendium\\CompositorTests\\": "tests/"
+		}
+	},
+	"config": { "platform": { "php": "8.5" } },
 	"authors": [
 		{
 			"name": "C. Fahner",
 			"email": "cfahner.git.ixuk9phi@slendium.org"
 		}
-	],
-	"require": {
-		"php": "^8.5"
-	}
+	]
 }
