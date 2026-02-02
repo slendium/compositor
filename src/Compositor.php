@@ -11,7 +11,7 @@ namespace Slendium\Compositor;
  * @since 1.0
  * @see Base\TwoPhaseCompositor A compositor with an optimization step in between
  * @template TComponent of Component
- * @template TOutput
+ * @template TComposition of Composition
  * @author C. Fahner
  * @copyright Slendium 2026
  */
@@ -20,7 +20,7 @@ interface Compositor {
 	/**
 	 * @since 1.0
 	 * @param TComponent $root
-	 * @return Composition<TComponent,TOutput>
+	 * @return TComposition
 	 */
 	public function compose(Component $root): Composition;
 
