@@ -49,20 +49,17 @@ class HtmlTwoPhaseCompositionTest extends TestCase {
 	}
 
 	public function test_compose_shouldNotTriggerFormattableCallback() {
-		$formattable = new class implements Formattable {
-			public bool $called = false;
-			#[Override]
-			public function generateHtml(): iterable {
-				$this->called = true;
-				yield '';
-			}
-		};
+		$called = false;
+		$component = new FormattableComponent(new EscapedTextCallback(function () use (&$called) {
+			$called = true;
+			return '';
+		}));
 		$sut = CompositorFixtures::twoPhaseEnglishNoReplace();
 
-		$composition = $sut->compose(new FormattableComponent($formattable));
-		$this->assertFalse($formattable->called);
+		$composition = $sut->compose($component);
+		$this->assertFalse($called);
 		\iterator_to_array($composition);
-		$this->assertTrue($formattable->called);
+		$this->assertTrue($called);
 	}
 
 }
