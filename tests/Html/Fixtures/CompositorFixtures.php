@@ -25,8 +25,7 @@ class CompositorFixtures {
 	/** @return Compositor<HtmlComponent,string> */
 	private static function createTwoPhaseEnglishNoReplaceCompositor(): Compositor {
 		return CompositorFactory::createTwoPhase(
-			replacementProvider: ReplacementProviderFixtures::noOpReplacer(),
-			localizer: LocalizerFixtures::englishLocalizer(),
+			replacementProvider: ReplacementProviderFixtures::englishNoOp()
 		);
 	}
 
