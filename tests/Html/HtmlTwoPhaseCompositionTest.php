@@ -7,6 +7,8 @@ use PHPUnit\Framework\TestCase;
 
 use Slendium\Compositor\Component;
 use Slendium\Compositor\Html\Formattable;
+use Slendium\Compositor\Base\Html\EscapedTextCallback;
+use Slendium\Compositor\Base\Html\UnescapedCharacterData;
 
 use Slendium\CompositorTests\Html\Fixtures\CompositorFixtures;
 use Slendium\CompositorTests\Html\Components\DivWrapper;
@@ -19,6 +21,7 @@ class HtmlTwoPhaseCompositionTest extends TestCase {
 		yield [ new TextComponent('no escapes'), 'no escapes' ];
 		yield [ new TextComponent('should <b>be</b> escaped'), 'should &lt;b&gt;be&lt;/b&gt; escaped' ];
 		yield [ new DivWrapper(new TextComponent('wrapped')), '<div>wrapped</div>' ];
+		yield [ new FormattableComponent(new UnescapedCharacterData('<script>alert();</script>')), '<script>alert();</script>' ];
 	}
 
 	#[DataProvider('composeCases')]
