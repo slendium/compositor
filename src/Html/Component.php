@@ -5,11 +5,12 @@ namespace Slendium\Compositor\Html;
 use Slendium\Localization\Localizable;
 
 use Slendium\Compositor\Component as IComponent;
+use Slendium\Compositor\Error;
 use Slendium\Compositor\Replaceable;
 
 /**
  * @since 1.0
- * @phpstan-type CompositionType Replaceable|Formattable|self|literal-string|float|int
+ * @phpstan-type CompositionType Replaceable|Formattable|Error|self|literal-string|float|int
  * @author C. Fahner
  * @copyright Slendium 2026
  */

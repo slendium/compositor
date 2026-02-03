@@ -24,11 +24,10 @@ final class CompositorFactory {
 	 * @param ReplacementProvider<Component,Formattable|literal-string|float|int> $replacementProvider
 	 * @return TwoPhaseCompositor<Component,Formattable|literal-string|float|int,string>
 	 */
-	public static function createTwoPhase(ReplacementProvider $replacementProvider, Localizer $localizer): TwoPhaseCompositor {
+	public static function createTwoPhase(ReplacementProvider $replacementProvider): TwoPhaseCompositor {
 		return new TwoPhaseCompositor(
 			adapter: new CompositorAdapter,
 			replacementProvider: $replacementProvider,
-			localizer: $localizer,
 		);
 	}
 

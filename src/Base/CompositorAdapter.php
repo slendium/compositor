@@ -5,6 +5,7 @@ namespace Slendium\Compositor\Base;
 use Slendium\Localization\Localizable;
 
 use Slendium\Compositor\Component;
+use Slendium\Compositor\Error;
 use Slendium\Compositor\Replaceable;
 
 /**
@@ -22,7 +23,7 @@ interface CompositorAdapter {
 	/**
 	 * @since 1.0
 	 * @param TComponent $component
-	 * @return iterable<Replaceable|TComponent|TPart|Localizable<Replaceable|TComponent|TPart>>
+	 * @return iterable<Replaceable|TComponent|TPart|Error|Localizable<Replaceable|TComponent|TPart|Error>>
 	 */
 	public function getDescendants(Component $component): iterable;
 

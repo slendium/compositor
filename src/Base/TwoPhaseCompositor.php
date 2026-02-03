@@ -5,11 +5,11 @@ namespace Slendium\Compositor\Base;
 use Override;
 
 use Slendium\Localization\Localizable;
-use Slendium\Localization\Localizer;
 
 use Slendium\Compositor\Component;
 use Slendium\Compositor\Composition;
 use Slendium\Compositor\Compositor;
+use Slendium\Compositor\Error as IError;
 use Slendium\Compositor\Replaceable;
 
 /**
@@ -57,8 +57,6 @@ class TwoPhaseCompositor implements Compositor {
 		/** @var ReplacementProvider<TComponent,TPart> */
 		private ReplacementProvider $replacementProvider,
 
-		private Localizer $localizer,
-
 		/** @var int<0,max> */
 		private int $maxDepth = self::DEFAULT_MAX_DEPTH,
 
@@ -70,22 +68,28 @@ class TwoPhaseCompositor implements Compositor {
 	 */
 	private function unwindTree(Component $component, int $depth): iterable {
 		if ($depth >= $this->maxDepth) {
+			yield from $this->maxDepthError();
 			return;
 		}
 
 		$this->componentClasses[\get_class($component)] = true;
 		foreach ($this->adapter->getDescendants($component) as $part) {
-			if ($part instanceof Localizable) {
-				$part = $this->localizer->localize($part); // @phpstan-ignore argument.type (bug or feature? see https://phpstan.org/r/301f358e-c426-4f09-8c75-38eef5fe69c4)
-			}
-			if ($part instanceof Replaceable) {
-				$part = $this->replacementProvider->replace($part);
+			if ($part instanceof Localizable || $part instanceof Replaceable || $part instanceof IError) {
+				$part = $this->replacementProvider->replace($part); // @phpstan-ignore argument.type (bug or feature? see https://phpstan.org/r/301f358e-c426-4f09-8c75-38eef5fe69c4)
 			}
 			if ($part instanceof Component) {
 				yield from $this->unwindTree($part, $depth + 1); // @phpstan-ignore argument.type (part will always be TComponent)
 			} else if ($part !== null) {
 				yield $part;
 			}
+		}
+	}
+
+	/** @return iterable<TPart> */
+	private function maxDepthError(): iterable {
+		$errorReplacement = $this->replacementProvider->replace(new Error('Maximum depth reached'));
+		if ($errorReplacement !== null) {
+			yield $errorReplacement;
 		}
 	}
 

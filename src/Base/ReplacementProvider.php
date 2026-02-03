@@ -2,7 +2,10 @@
 
 namespace Slendium\Compositor\Base;
 
+use Slendium\Localization\Localizable;
+
 use Slendium\Compositor\Component;
+use Slendium\Compositor\Error;
 use Slendium\Compositor\Replaceable;
 
 /**
@@ -20,9 +23,10 @@ interface ReplacementProvider {
 
 	/**
 	 * @since 1.0
-	 * @param Replaceable $part
-	 * @return TComponent|TPart|null
+	 * @template T
+	 * @param Localizable<T>|Replaceable|Error $part
+	 * @return ($part is Error ? TPart|null : TComponent|TPart|null)
 	 */
-	public function replace(Replaceable $part): mixed;
+	public function replace(Localizable|Replaceable|Error $part): mixed;
 
 }
