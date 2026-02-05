@@ -4,9 +4,11 @@ namespace Slendium\CompositorTests\Html\Components;
 
 use Override;
 
+use Slendium\Compositor\UseLibrary;
 use Slendium\Compositor\Html\Component;
 use Slendium\Compositor\Base\Html\EscapedText;
 
+#[UseLibrary(Library::class)]
 class TextComponent implements Component {
 
 	#[Override]

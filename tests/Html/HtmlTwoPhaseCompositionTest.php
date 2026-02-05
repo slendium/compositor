@@ -13,6 +13,7 @@ use Slendium\Compositor\Base\Html\UnescapedCharacterData;
 use Slendium\CompositorTests\Html\Fixtures\CompositorFixtures;
 use Slendium\CompositorTests\Html\Components\DivWrapper;
 use Slendium\CompositorTests\Html\Components\FormattableComponent;
+use Slendium\CompositorTests\Html\Components\Library;
 use Slendium\CompositorTests\Html\Components\TextComponent;
 
 class HtmlTwoPhaseCompositionTest extends TestCase {
@@ -60,6 +61,16 @@ class HtmlTwoPhaseCompositionTest extends TestCase {
 		$this->assertFalse($called);
 		\iterator_to_array($composition);
 		$this->assertTrue($called);
+	}
+
+	public function test_compose_shouldIncludeLibraries() {
+		$tree = new TextComponent('');
+		$sut = CompositorFixtures::twoPhaseEnglishNoReplace();
+
+		$result = \iterator_to_array($sut->compose($tree)->generateLibraries(), preserve_keys: false);
+
+		$this->assertSame(1, \count($result));
+		$this->assertInstanceOf(Library::class, $result[0]);
 	}
 
 }
