@@ -16,11 +16,7 @@ use Slendium\Compositor\Html\Formattable;
 final readonly class UnescapedCharacterData implements Formattable {
 
 	/** @since 1.0 */
-	public function __construct(
-
-		private string $characterData,
-
-	) { }
+	public function __construct(private string $characterData) { }
 
 	#[Override]
 	public function generateHtml(): iterable {
