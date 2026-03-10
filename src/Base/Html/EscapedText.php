@@ -7,7 +7,7 @@ use Override;
 use Slendium\Compositor\Html\Formattable;
 
 /**
- * Escapes text for use in an HTML document (in UTF-8).
+ * Escaped text for use in an HTML document (in UTF-8).
  *
  * @since 1.0
  * @author C. Fahner
@@ -18,17 +18,14 @@ final readonly class EscapedText implements Formattable {
 	/**
 	 * Escapes text to an HTML-safe string.
 	 * @since 1.0
+	 * @see https://archive.ph/rbmZ1
 	 */
 	public static function escape(string $text): string {
-		return \str_replace([ '&', '"', '<', '>' ], [ '&amp;', '&quot;', '&lt;', '&gt;' ], $text);
+		return \str_replace([ '&', '<', '>' ], [ '&amp;', '&lt;', '&gt;' ], $text);
 	}
 
 	/** @since 1.0 */
-	public function __construct(
-
-		private string $text,
-
-	) { }
+	public function __construct(private string $text) { }
 
 	#[Override]
 	public function generateHtml(): iterable {
