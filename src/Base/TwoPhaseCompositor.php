@@ -2,6 +2,7 @@
 
 namespace Slendium\Compositor\Base;
 
+use Exception;
 use Override;
 
 use Slendium\Localization\Localizable;
@@ -9,20 +10,15 @@ use Slendium\Localization\Localizable;
 use Slendium\Compositor\Component;
 use Slendium\Compositor\Composition;
 use Slendium\Compositor\Compositor;
-use Slendium\Compositor\Error as IError;
 use Slendium\Compositor\Replaceable;
 
 /**
  * A compositor that generates the result in two phases, allowing the intermediate results to be
  * analyzed and optimized.
  *
- * Components may return {@see Localizable}s, which may contain {@see Replaceable}s, components or
- * parts (but not other Localizables). Replaceables may only be replaced with components or valid
- * parts, not Localizables or Replaceables.
- *
  * @since 1.0
  * @template TComponent of Component
- * @template TPart
+ * @template TIntermediate
  * @template TOutput
  * @implements Compositor<TComponent,PartialComposition<TOutput>>
  * @author C. Fahner
@@ -36,7 +32,7 @@ class TwoPhaseCompositor implements Compositor {
 	/** @var array<class-string<TComponent>,true> */
 	private array $componentClasses;
 
-	/** @return PartialComposition<TComponent,TPart,TOutput> */
+	/** @return PartialComposition<TComponent,TIntermediate,TOutput> */
 	#[Override]
 	public function compose(Component $root): PartialComposition {
 		$this->componentClasses = [ ];
@@ -51,11 +47,8 @@ class TwoPhaseCompositor implements Compositor {
 	/** @since 1.0 */
 	public function __construct(
 
-		/** @var CompositorAdapter<TComponent,TPart,TOutput> */
+		/** @var CompositorAdapter<TComponent,TIntermediate,TOutput> */
 		private CompositorAdapter $adapter,
-
-		/** @var ReplacementProvider<TComponent,TPart> */
-		private ReplacementProvider $replacementProvider,
 
 		/** @var int<0,max> */
 		private int $maxDepth = self::DEFAULT_MAX_DEPTH,
@@ -64,32 +57,21 @@ class TwoPhaseCompositor implements Compositor {
 
 	/**
 	 * @param TComponent $component
-	 * @return iterable<TPart>
+	 * @return iterable<TIntermediate>
 	 */
 	private function unwindTree(Component $component, int $depth): iterable {
 		if ($depth >= $this->maxDepth) {
-			yield from $this->maxDepthError();
+			yield from $this->adapter->composeException(new Exception('Maximum depth reached'));
 			return;
 		}
 
 		$this->componentClasses[\get_class($component)] = true;
-		foreach ($this->adapter->getDescendants($component) as $part) {
-			if ($part instanceof Localizable || $part instanceof Replaceable || $part instanceof IError) {
-				$part = $this->replacementProvider->replace($part); // @phpstan-ignore argument.type (bug or feature? see https://phpstan.org/r/301f358e-c426-4f09-8c75-38eef5fe69c4)
-			}
+		foreach ($this->adapter->composeComponent($component) as $part) {
 			if ($part instanceof Component) {
 				yield from $this->unwindTree($part, $depth + 1); // @phpstan-ignore argument.type (part will always be TComponent)
-			} else if ($part !== null) {
+			} else {
 				yield $part;
 			}
-		}
-	}
-
-	/** @return iterable<TPart> */
-	private function maxDepthError(): iterable {
-		$errorReplacement = $this->replacementProvider->replace(new Error('Maximum depth reached'));
-		if ($errorReplacement !== null) {
-			yield $errorReplacement;
 		}
 	}
 

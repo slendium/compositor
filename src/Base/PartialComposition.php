@@ -10,11 +10,11 @@ use Slendium\Compositor\Component;
 use Slendium\Compositor\Base\CompositorAdapter;
 
 /**
- * Provides metadata about a completed composition.
+ * Provides metadata about a partially completed composition.
  *
  * @since 1.0
  * @template TComponent of Component
- * @template TPart
+ * @template TIntermediate
  * @template TOutput
  * @extends BaseComposition<TComponent,TOutput>
  * @implements IteratorAggregate<TOutput>
@@ -26,7 +26,7 @@ final class PartialComposition extends BaseComposition implements IteratorAggreg
 	#[Override]
 	public function getIterator(): Traversable {
 		foreach ($this->parts as $part) {
-			yield from $this->adapter->generateOutput($part);
+			yield from $this->adapter->composePart($part);
 		}
 	}
 
@@ -40,14 +40,13 @@ final class PartialComposition extends BaseComposition implements IteratorAggreg
 
 		/**
 		 * @since 1.0
-		 * @var list<TPart>
+		 * @var list<TIntermediate>
 		 */
 		private readonly array $parts,
 
 		/**
 		 * @since 1.0
-		 * @template TPart
-		 * @var CompositorAdapter<TComponent,TPart,TOutput> $adapter
+		 * @var CompositorAdapter<TComponent,TIntermediate,TOutput> $adapter
 		 */
 		private readonly CompositorAdapter $adapter,
 

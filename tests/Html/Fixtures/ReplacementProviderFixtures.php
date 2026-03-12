@@ -6,43 +6,50 @@ use Exception;
 use Override;
 
 use Slendium\Localization\Localizable;
+use Slendium\Localization\Base\Locale;
 
-use Slendium\Compositor\Error;
 use Slendium\Compositor\Replaceable;
-use Slendium\Compositor\Base\ReplacementProvider;
-use Slendium\Compositor\Html\Component;
+use Slendium\Compositor\Html\Component as HtmlComponent;
 use Slendium\Compositor\Html\Formattable;
+use Slendium\Compositor\Html\ReplacementProvider;
 
+/**
+ * @internal
+ * @phpstan-import-type LocalizablePart from HtmlComponent
+ * @author C. Fahner
+ * @copyright Slendium 2026
+ */
 class ReplacementProviderFixtures {
 
-	/** @var ReplacementProvider<HtmlComponent|Formattable|literal-string|float|int> */
 	private static ?ReplacementProvider $englishNoOp = null;
 
 	/**
 	 * Creates a replacement provider which:
 	 * * localizes Localizables to english
 	 * * keeps Components and Formattables in place
-	 * * converts errors to thrown exceptions
+	 * * throws exceptions given to its
 	 * * removes everything else
-	 *
-	 * @return ReplacementProvider<HtmlComponent|Formattable|literal-string|float|int>
 	 */
 	public static function englishNoOp(): ReplacementProvider {
 		return self::$englishNoOp ??= self::createEnglishNoOp();
 	}
 
-	/** @return ReplacementProvider<HtmlComponent|Formattable|literal-string|float|int> */
 	private static function createEnglishNoOp(): ReplacementProvider {
 		return new class implements ReplacementProvider {
+
 			#[Override]
-			public function replace(Localizable|Replaceable|Error $part): mixed {
-				return match(true) {
-					$part instanceof Localizable => $part['en'] ?? null,
-					$part instanceof Error => throw new Exception($part->message),
-					$part instanceof Component || $part instanceof Formattable => $part,
-					default => null
-				};
+			public function replace(Replaceable|Localizable|Exception $part): HtmlComponent|Formattable|null {
+				if ($part instanceof Localizable) {
+					return $part[new Locale('en')] ?? null; // @phpstan-ignore return.type (Localizable[Locale] should return valid part)
+				}
+				if ($part instanceof Exception) {
+					throw $part;
+				}
+				return $part instanceof Formattable
+					? $part
+					: null;
 			}
+
 		};
 	}
 
